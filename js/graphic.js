@@ -115,7 +115,6 @@ map.on("viewreset", reset);
     hospitals.features.forEach(function(d){
         d.properties.one_or_mo == "False" ? d.properties.color = noSPC1Color : d.properties.color = spc1Color;
         d.properties.num_spc_one = +d.properties.num_spc1;
-        console.log(d.properties.num_spc_one);
     });
 
     //circles for local.js
@@ -125,21 +124,22 @@ map.on("viewreset", reset);
             .enter().append("circle")
             .attr("r", function(d){
                 var num = d.properties.num_spc_one; 
-                console.log(d);
                 return num * 2 + 8})
             .attr("class", "hospitals")
             .style("fill", function(d){return d.properties.color; })
-            .style("opacity", 0.8)
+            .style("opacity", 0.7)
             .style("stroke", "white")
             .style("stroke-width", 0.3)
             .on("mouseover", function(d,i){ 
-                hospitalTip.show(d);
-                d3.select(this).each(highlight);})
+                // hospitalTip.show(d);
+                d3.select(this).each(highlight);}
+                )
+            .on("click", hospitalTip.show)
             .on("mouseout", function(d,i){ 
                 hospitalTip.hide(d);
-                d3.select(this).each(unhighlight);})
-            .on("click", clickForFeatures);
-        };
+                d3.select(this).each(unhighlight);}
+                );
+        }
 
     //build local feature circles
     hospitalFeatures();
@@ -149,19 +149,19 @@ map.on("viewreset", reset);
     // highlight function for mouseover
     var highlight = function(){
         //redraw the selection
-        this.parentNode.appendChild(this);
+        // this.parentNode.appendChild(this);
         //store original size of dot
         outerScope.original = d3.select(this).attr("r");
         //generate an actual d3 selection and do stuff
-        d3.select(this).attr("r", 30).style("opacity", 0.9).style("stroke-width", 1.5);
+        d3.select(this).style("opacity", 0.9).style("stroke-width", 3.5).style("stroke", "yellow");
     };
     //unhighlight
     var unhighlight = function(){
-        var firstChild = this.parentNode.firstChild;
-        if(firstChild) {
-            this.parentNode.insertBefore(this, firstChild);
-        }
-        d3.select(this).attr("r", outerScope.original).style("opacity", 0.8).style("stroke-width", 0.5);
+        // var firstChild = this.parentNode.firstChild;
+        // if(firstChild) {
+        //     this.parentNode.insertBefore(this, firstChild);
+        // }
+        d3.select(this).attr("r", outerScope.original).style("opacity", 0.7).style("stroke-width", 0.5);
     };
 
     //helper function sends properties to the console
@@ -192,43 +192,77 @@ map.on("viewreset", reset);
 
 /////////////key//////////////
 
-    var legend = d3.select("#map").append("svg")
-        .attr("width", 300)
-        .attr("height", 115);
+var info = L.control({position: 'topleft'});
 
-    legend.append("rect")
-        .style("fill", "white")
-        .attr("width", 300)
-        .attr("height", 100)
-        .attr("x", "50")
-        .attr("y", "2")
-        .style("opacity", 0.8)
-        ;
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    // this.update();
+    return this._div;
+};
 
-    legend.append("g")
-            .attr("class", "circleKey")
-        .selectAll("g")
-            .data([{"color": spc1Color, "text": "Hospitals has SPC1 Buildings"}, {"color": noSPC1Color, "text": "No SPC1 Buildings"}])
-            .enter().append("g")
-            .attr("class", "colorsGroup")
-            .attr("transform", "translate(75, 30)");
+info.addTo(map);
 
-    //some ky values that i'll repeat
-    var keyRadius = 15;
-    //make the circles
-    legend.selectAll(".colorsGroup").append("circle")
-        .style("stroke-width", 2.0)
-        .style("fill", function(d){ return d.color; })
-        .style("stroke", "black")
-        .attr("r", keyRadius)
-        .attr("cy", function(d,i){ return i * keyRadius*3;});
+    function buildLegendSVG(){
+        var legend = d3.select(".info").append("svg")
+            .attr("id", "infoSVG")
+            .attr("width", 225)
+            .attr("height", 75);
 
-    //add annotations
-    legend.selectAll(".colorsGroup").append("text")
-        .style("font-size", 15)
-        .attr("x", keyRadius*1.5)
-        .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
-        .text(function(d){return d.text;});
+        legend.append("g")
+                .attr("class", "circleKey")
+            .selectAll("g")
+                .data([{"color": spc1Color, "text": "Hospital has SPC1 Buildings"}, {"color": noSPC1Color, "text": "No SPC1 Buildings"}])
+                .enter().append("g")
+                .attr("class", "colorsGroup")
+                .attr("transform", "translate(18, 18)");
+
+        //some ky values that i'll repeat
+        var keyRadius = 12;
+        //make the circles
+        legend.selectAll(".colorsGroup").append("circle")
+            .style("stroke-width", 1.0)
+            .style("fill", function(d){ return d.color; })
+            .style("stroke", "black")
+            .attr("r", keyRadius)
+            .attr("cy", function(d,i){ return i * keyRadius*3;});
+
+        //add annotations
+        legend.selectAll(".colorsGroup").append("text")
+            .attr("class","infoText")
+            .attr("x", keyRadius*1.5)
+            .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
+            .text(function(d){return d.text;});
+    }//end buildLegendSVG
+    
+    buildLegendSVG(); 
+
+    //add slide button
+    function addSlide(){
+        $(".info").append('<div id="slide-control" class="buttons btn-group btn-group-justified"> <a class="slide-up btn"><span class="glyphicon glyphicon-chevron-up"> </span></a> </div>');
+    }   
+
+    addSlide();
+
+    //slide up code
+    function addSlideEffects(){
+        $(".slide-up").on("click", function(){
+            $("#infoSVG").slideUp("slow");
+            $(".glyphicon").attr("class", "glyphicon glyphicon-chevron-down");
+            $(".slide-up").attr("class", "slide-down btn");
+
+            $(".slide-down").on("click", function(){
+                $(".info").empty();
+                buildLegendSVG();
+                addSlide();
+                addSlideEffects();
+            });
+        });
+    }
+
+    addSlideEffects();
+    //slide down code
+  
+
 
 } //end render
 
