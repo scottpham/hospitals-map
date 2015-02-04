@@ -28,22 +28,19 @@ function render(width) {
 
     //make a map                        
     var map = new L.Map("map", {
-        center: [37.74, -122.31], //lat, long, not long, lat
-        zoom: 11,
+        center: [37.60, -122.21], //lat, long, not long, lat
+        zoom: 10,
         scrollWheelZoom: false}) 
         .addLayer(new L.TileLayer("http://api.tiles.mapbox.com/v4/nbclocal.k38kb5c1/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmJjbG9jYWwiLCJhIjoiS3RIUzNQOCJ9.le_LAljPneLpb7tBcYbQXQ", {
     attribution: 'Map tiles by MapBox. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
     }));
 
-
     var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     // var svg = d3.select("#map").select("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-
     var transform = d3.geo.transform({point: projectPoint}),
         path = d3.geo.path().projection(transform);
-
 
     //leaflet implements a geometric transformation
     function projectPoint(x, y){
@@ -76,7 +73,6 @@ map.on("viewreset", reset);
 
     reset();
 
-
     ////////////////tooltip stuff////////////////
     //create tip container in d3 for local
     var div = d3.select("#map").append("div")
@@ -100,9 +96,7 @@ map.on("viewreset", reset);
     // //call both tips
     g.call(hospitalTip);
 
-    //////////////end tooltip//////////////
-
-
+    //////////////end tooltip/////////////
     // //add a latlng object to each item in the dataset
     hospitals.features.forEach(function(d) {
         d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
@@ -148,8 +142,6 @@ map.on("viewreset", reset);
 
     // highlight function for mouseover
     var highlight = function(){
-        //redraw the selection
-        // this.parentNode.appendChild(this);
         //store original size of dot
         outerScope.original = d3.select(this).attr("r");
         //generate an actual d3 selection and do stuff
@@ -157,10 +149,6 @@ map.on("viewreset", reset);
     };
     //unhighlight
     var unhighlight = function(){
-        // var firstChild = this.parentNode.firstChild;
-        // if(firstChild) {
-        //     this.parentNode.insertBefore(this, firstChild);
-        // }
         d3.select(this).attr("r", outerScope.original).style("opacity", 0.7).style("stroke-width", 0.5);
     };
 
@@ -246,23 +234,14 @@ info.addTo(map);
     //slide up code
     function addSlideEffects(){
         $(".slide-up").on("click", function(){
-            $("#infoSVG").slideUp("slow");
-            $(".glyphicon").attr("class", "glyphicon glyphicon-chevron-down");
-            $(".slide-up").attr("class", "slide-down btn");
-
-            $(".slide-down").on("click", function(){
-                $(".info").empty();
-                buildLegendSVG();
-                addSlide();
-                addSlideEffects();
-            });
-        });
+            console.log("slide up fired");
+            $("#infoSVG").slideToggle("slow");
+            $(".glyphicon").toggleClass("glyphicon-chevron-down").toggleClass("glyphicon-chevron-up");
+         });
     }
 
     addSlideEffects();
     //slide down code
-  
-
 
 } //end render
 

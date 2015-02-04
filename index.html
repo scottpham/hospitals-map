@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Graphic</title>
+    <title>Hospitals</title>
 
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -25,8 +25,6 @@
 
     <!--d3 helpers-->
     <script src="//d3js.org/topojson.v1.min.js"></script>
-	<!--<script src="//d3js.org/colorbrewer.v1.min.js"></script>-->
-	<!--<script src="//d3js.org/queue.v1.min.js"></script>-->
     
     <!-- mapbox js cdn-->
     <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
@@ -154,12 +152,6 @@
         position: relative;
       }
 
-    .key {
-        position: absolute;
-        top: 200;
-        left: 150;
-    }
-
     /*legend*/
     .info {
         padding: 6px 8px;
@@ -195,32 +187,28 @@
     #slide-control:hover {
         background: #933F38; 
         color: darkred;}
-            
+    
+    .glyphicon {
+        font-size: 18px;
+    }
 
         </style>
 </head>
 <body>
     <div class="col-xs-12">
-        <h1>Earthquake Safety Ratings of Hospitals in the Bay Area</h1>
-        <p>Inspectors rate hospital buildings with "SPC" ratings 1-5. The "SPC1" rating is the lowest. It means the building has a significant risk of collapsing during an earthquake.</p>
-        <p>Most hospitals are collections several buildings, some of which might be safer than others. In this map, hospitals that have at least one SPC 1-rated building are shaded red. The larger the dot, the more SPC 1-rated buildings there are in that hospital.</p> 
-
-    <div id="map"></p>
+        <h1>Earthquake Safety of Hospitals in the Bay Area</h1>
+        <p>Hospitals that have "acute care" facilities are given earthquake safety ratings between 1 and 5. A "SPC" (Seismic Performance Category) of 1 is means the building has a significant risk of collapsing during an earthquake.</p>
+        <p>Most hospitals are collections of several buildings, some of which might be safer than others. In this map, hospitals that have at least one SPC 1-rated building are shaded red. The larger the dot, the more SPC 1-rated buildings that bulding has. Click a dot for more info.</p> 
+    <div id="map"></div>
 
     <div class="footnotes">
-        <h4>Notes: </h4>
-    </p>
-
-    <div class="footer">
+        <p>Notes: Data from OSHPD report dated 1/15/15</p>
         <p>Source: <a href="http://www.dot.ca.gov/">OSHPD</a></p>
         <p>Credit: <a href="http://www.twitter.com/scottpham">Scott Pham</a>/NBC Bay Area</p>
     </p>
 
     <!-- load data before graphic-->
     <script src="js/hospitals.js"></script>
-
-    <!-- load topo 
-    <script src="js/californiaFaults.json"></script> -->
     <!-- load graphic -->
     <script src="js/graphic.js" type="text/javascript"></script>
 
